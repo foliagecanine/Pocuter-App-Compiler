@@ -1,0 +1,38 @@
+name: Build and Upload Artifact
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore "Pocuter App Compiler.sln"
+      
+    - name: Publish
+      run: dotnet publish "Pocuter App Compiler.sln" --configuration Release --runtime win-x64 --no-self-contained -p:PublishSingleFile=true
+
+    - name: Remove pdb files from release
+      run: rm './Pocuter App Compiler/bin/Release/net6.0-windows/win-x64/publish/*.pdb'
+
+    - name: Copy LICENSE.txt to release
+      run: cp './LICENSE.txt' './Pocuter App Compiler/bin/Release/net6.0-windows/win-x64/publish/LICENSE.txt'
+
+    - name: Publish Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pocuter-app-compiler
+        path: './Pocuter App Compiler/bin/Release/net6.0-windows/win-x64/publish'

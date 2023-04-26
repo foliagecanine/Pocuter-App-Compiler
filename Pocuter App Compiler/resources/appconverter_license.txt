@@ -1,0 +1,2 @@
+appconverter.exe is created by Pocuter GmbH and used under the Creative Commons 4.0 Attribution license.
+See https://github.com/pocuter/appconverter for more details.
