@@ -131,15 +131,15 @@
             // numericVersionMaj
             // 
             numericVersionMaj.Location = new Point(12, 138);
-            numericVersionMaj.Maximum = new decimal(new int[] { 2, 0, 0, 0 });
+            numericVersionMaj.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericVersionMaj.Name = "numericVersionMaj";
-            numericVersionMaj.Size = new Size(34, 27);
+            numericVersionMaj.Size = new Size(53, 27);
             numericVersionMaj.TabIndex = 6;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(52, 145);
+            label4.Location = new Point(73, 145);
             label4.Name = "label4";
             label4.Size = new Size(12, 20);
             label4.TabIndex = 7;
@@ -147,24 +147,24 @@
             // 
             // numericVersionMin
             // 
-            numericVersionMin.Location = new Point(70, 138);
-            numericVersionMin.Maximum = new decimal(new int[] { 9, 0, 0, 0 });
+            numericVersionMin.Location = new Point(91, 138);
+            numericVersionMin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericVersionMin.Name = "numericVersionMin";
-            numericVersionMin.Size = new Size(34, 27);
+            numericVersionMin.Size = new Size(53, 27);
             numericVersionMin.TabIndex = 8;
             // 
             // numericVersionPatch
             // 
-            numericVersionPatch.Location = new Point(128, 138);
-            numericVersionPatch.Maximum = new decimal(new int[] { 9, 0, 0, 0 });
+            numericVersionPatch.Location = new Point(169, 138);
+            numericVersionPatch.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericVersionPatch.Name = "numericVersionPatch";
-            numericVersionPatch.Size = new Size(34, 27);
+            numericVersionPatch.Size = new Size(53, 27);
             numericVersionPatch.TabIndex = 10;
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(110, 145);
+            label5.Location = new Point(151, 145);
             label5.Name = "label5";
             label5.Size = new Size(12, 20);
             label5.TabIndex = 9;
@@ -225,7 +225,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(182, 115);
+            label9.Location = new Point(230, 115);
             label9.Name = "label9";
             label9.Size = new Size(56, 20);
             label9.TabIndex = 17;
@@ -233,10 +233,10 @@
             // 
             // numericAppID
             // 
-            numericAppID.Location = new Point(182, 138);
+            numericAppID.Location = new Point(230, 138);
             numericAppID.Maximum = new decimal(new int[] { 999999, 0, 0, 0 });
             numericAppID.Name = "numericAppID";
-            numericAppID.Size = new Size(148, 27);
+            numericAppID.Size = new Size(100, 27);
             numericAppID.TabIndex = 19;
             // 
             // textBoxAppIconPath

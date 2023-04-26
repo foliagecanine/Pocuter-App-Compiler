@@ -16,7 +16,7 @@ Check the [Releases](https://github.com/foliagecanine/Pocuter-App-Compiler/relea
 2. Open `Pocuter App Compiler.exe`.
 3. Click the [Browse...] button under the **App Project** heading and select the folder containing your sketch from Step 1.
 4. Give your app a name in the **App Name** box.
-5. Select a version number for your app in the **App Version** box. It can go from 0.0.0 to 2.5.5.
+5. Select a version number for your app in the **App Version** box. It can go from 0.0.0 to 255.255.255.
 6. Choose an App ID for your app and enter it into the **App ID** box. According to Pocuter this should be a number greater than 100000 or the number assigned for the app store.
 7. Enter in the author of the app in the **App Author** box.
 8. (Optional) Create a 16x16 icon for your app, click the [Browse...] button under the **App Icon** heading and select the icon.
