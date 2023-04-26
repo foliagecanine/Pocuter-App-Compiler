@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Pocuter_App_Compiler
 {
@@ -107,6 +108,7 @@ namespace Pocuter_App_Compiler
             }
 
             progressBar.Value = 40;
+            progressBar.Update();
             string iniFile = "[APPDATA]\n";
             iniFile += "Name=" + textBoxAppName.Text + "\n";
             iniFile += "Author=" + textBoxAppAuthor.Text + "\n";
@@ -131,6 +133,7 @@ namespace Pocuter_App_Compiler
             }
 
             progressBar.Value = 60;
+            progressBar.Update();
             try
             {
                 File.WriteAllText("app.ini", iniFile);
@@ -154,6 +157,7 @@ namespace Pocuter_App_Compiler
             }
 
             progressBar.Value = 80;
+            progressBar.Update();
             string converterArgs = "-id " + numericAppID.Value;
             converterArgs += " -version " + numericVersionMaj.Value + "." + numericVersionMin.Value + "." + numericVersionPatch.Value;
             converterArgs += " -image app.bin -meta app.ini";
@@ -199,58 +203,94 @@ namespace Pocuter_App_Compiler
 
             if (checkBoxInstall.Checked)
             {
-                try
-                {
-                    byte[] pocuterUploadFile = File.ReadAllBytes("apps/" + numericAppID.Value + "/esp32c3.app");
-
-                    HttpClient client = new HttpClient();
-
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-
-                    form.Add(new StringContent(numericAppID.Value.ToString()), "appID");
-
-                    byte[] md5Hash = MD5.HashData(pocuterUploadFile);
-                    string hashString = BitConverter.ToString(md5Hash).Replace("-", "").ToLower();
-                    form.Add(new StringContent(hashString), "appMD5");
-
-                    form.Add(new StringContent(pocuterUploadFile.Length.ToString()), "appSize");
-
-                    FileStream fs = new FileStream("apps/" + numericAppID.Value + "/esp32c3.app", FileMode.Open);
-                    fs.Position = 0;
-                    form.Add(new StreamContent(fs), "appImage", "apps/" + numericAppID.Value + "/esp32c3.app");
-
-                    HttpResponseMessage response = client.PostAsync(
-                        "http://" +
-                        numericIP_A.Value.ToString() + "." +
-                        numericIP_B.Value.ToString() + "." +
-                        numericIP_C.Value.ToString() + "." +
-                        numericIP_D.Value.ToString(),
-                        form).Result;
-                    fs.Close();
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("[2] Failed to send app to Pocuter: " + response.ReasonPhrase);
-                        progressBar.Value = 0;
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to send app to Pocuter: " + ex.Message);
-                    while(ex.InnerException != null)
-                    {
-                        ex = ex.InnerException;
-                        MessageBox.Show(ex.Message);
-                    }
-                    progressBar.Value = 0;
+                if (!UploadToPocuter())
                     return;
-                }
             }
 
             progressBar.Value = 100;
+            progressBar.Update();
             MessageBox.Show("Success!");
             progressBar.Value = 0;
+        }
+
+        bool UploadToPocuter()
+        {
+            try
+            {
+                byte[] pocuterUploadFile = File.ReadAllBytes("apps/" + numericAppID.Value + "/esp32c3.app");
+
+                /*
+                 * Manually generate a POST request because it is very specific about what it wants to receive.
+                 */
+                HttpClient client = new HttpClient();
+
+                string uploadHost = "http://" +
+                    numericIP_A.Value.ToString() + "." +
+                    numericIP_B.Value.ToString() + "." +
+                    numericIP_C.Value.ToString() + "." +
+                    numericIP_D.Value.ToString();
+                string uploadUrl = uploadHost + "/upload";
+
+                string filePath = "apps/" + numericAppID.Value + "/esp32c3.app";
+
+                byte[] md5Hash = MD5.HashData(pocuterUploadFile);
+                string hashString = BitConverter.ToString(md5Hash).Replace("-", "").ToLower();
+
+                string boundaryStr = "418777386925025282742009286339";
+                string boundary = "-----------------------------" + boundaryStr + "\r\n";
+                string requestBody = "";
+                requestBody += boundary;
+                boundary = "\r\n" + boundary;
+                requestBody += "Content-Disposition: form-data; name=\"appID\"\r\n";
+                requestBody += "\r\n";
+                requestBody += numericAppID.Value.ToString();
+                requestBody += boundary;
+                requestBody += "Content-Disposition: form-data; name=\"appMD5\"\r\n";
+                requestBody += "\r\n";
+                requestBody += hashString;
+                requestBody += boundary;
+                requestBody += "Content-Disposition: form-data; name=\"appSize\"\r\n";
+                requestBody += "\r\n";
+                requestBody += pocuterUploadFile.Length.ToString();
+                requestBody += boundary;
+                requestBody += "Content-Disposition: form-data; name=\"appImage\"; filename=\"" + filePath + "\"\r\n";
+                requestBody += "Content-Type: application/octet-stream\r\n";
+                requestBody += "\r\n";
+
+                byte[] requestContentsBytes = Encoding.UTF8.GetBytes(requestBody);
+                byte[] requestFileBytes = File.ReadAllBytes(filePath);
+                byte[] boundaryBytes = Encoding.UTF8.GetBytes("\r\n-----------------------------" + boundaryStr + "--\r\n");
+                byte[] requestBytes = new byte[requestContentsBytes.Length + requestFileBytes.Length + boundaryBytes.Length];
+                Array.Copy(requestContentsBytes, 0, requestBytes, 0, requestContentsBytes.Length);
+                Array.Copy(requestFileBytes, 0, requestBytes, requestContentsBytes.Length, requestFileBytes.Length);
+                Array.Copy(boundaryBytes, 0, requestBytes, requestContentsBytes.Length + requestFileBytes.Length, boundaryBytes.Length);
+
+                ByteArrayContent byteContent = new ByteArrayContent(requestBytes);
+                byteContent.Headers.Add("Content-Type", "multipart/form-data; boundary=---------------------------418777386925025282742009286339");
+
+                HttpResponseMessage response = client.PostAsync(uploadUrl, byteContent).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("[2] Failed to send app to Pocuter: " + response.ReasonPhrase);
+                    return false;
+                }
+
+                byteContent.Dispose();
+                client.Dispose();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to send app to Pocuter: " + ex.Message);
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    MessageBox.Show(ex.Message);
+                }
+                progressBar.Value = 0;
+                return false;
+            }
+
+            return true;
         }
 
         private void processArduino_Exited(object sender, EventArgs e)
