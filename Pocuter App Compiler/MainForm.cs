@@ -123,10 +123,10 @@ namespace Pocuter_App_Compiler
                     for (int y = 0; y < 16; y++)
                     {
                         Color color = iconBitmap.GetPixel(x, y);
-                        pixels[(x * 16 * 4) + (y * 4) + 0] = color.B;
-                        pixels[(x * 16 * 4) + (y * 4) + 1] = color.G;
-                        pixels[(x * 16 * 4) + (y * 4) + 2] = color.R;
-                        pixels[(x * 16 * 4) + (y * 4) + 3] = 255;
+                        pixels[(y * 16 * 4) + (x * 4) + 0] = color.B;
+                        pixels[(y * 16 * 4) + (x * 4) + 1] = color.G;
+                        pixels[(y * 16 * 4) + (x * 4) + 2] = color.R;
+                        pixels[(y * 16 * 4) + (x * 4) + 3] = 255;
                     }
                 }
                 iniFile += "AppIcon=" + Convert.ToBase64String(pixels) + "\n";
