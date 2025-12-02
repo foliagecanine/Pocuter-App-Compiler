@@ -32,7 +32,7 @@ jobs:
       run: cp './LICENSE.txt' './Pocuter App Compiler/bin/Release/net6.0-windows/win-x64/publish/LICENSE.txt'
 
     - name: Publish Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pocuter-app-compiler
         path: './Pocuter App Compiler/bin/Release/net6.0-windows/win-x64/publish'
