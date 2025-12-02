@@ -95,7 +95,7 @@ namespace Pocuter_App_Compiler
 
             progressBar.Value = 20;
             progressBar.Update();
-            processArduino.StartInfo.Arguments = "compile \"" + textBoxAppProject.Text + "\" -b esp32:esp32:pocuterone -e";
+            processArduino.StartInfo.Arguments = "compile \"" + textBoxAppProject.Text + "\" -b pocuter:esp32:pocuterone -e";
             processArduino.StartInfo.RedirectStandardError = true;
             processArduino.Start();
             processArduino.WaitForExit();
@@ -147,7 +147,7 @@ namespace Pocuter_App_Compiler
 
             try
             {
-                File.Copy(textBoxAppProject.Text + "/build/esp32.esp32.pocuterone/" + new DirectoryInfo(textBoxAppProject.Text).Name + ".ino.bin", "app.bin", true);
+                File.Copy(textBoxAppProject.Text + "/build/pocuter.esp32.pocuterone/" + new DirectoryInfo(textBoxAppProject.Text).Name + ".ino.bin", "app.bin", true);
             }
             catch (Exception ex)
             {
